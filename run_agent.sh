@@ -6,7 +6,7 @@ cat > config.sh <<EOF
 # Update these values as needed
 
 # Control panel URL
-CONTROL_PANEL_URL="http://example.com/control-panel"
+CONTROL_PANEL_URL="http://localhost:5000/receive_data"
 
 # AWS region
 AWS_REGION="us-east-1"
@@ -18,7 +18,7 @@ PING_DOCUMENT_NAME="AWS-RunShellScript"
 PING_DOCUMENT_PARAMETERS=""
 
 # Sleep interval in seconds
-SLEEP_INTERVAL=60
+HEARTBEAT_INTERVAL=60
 EOF
 
 # Prompt user for AWS access key and secret access key
