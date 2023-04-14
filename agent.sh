@@ -57,7 +57,38 @@ gather_data() {
 send_data_to_control_panel() {
     local instance_data="$1"
     # Send instance data to control panel using POST request
-    curl -s -X POST -d "$instance_data" "$CONTROL_PANEL_URL"
+    #curl -s -X POST -d "$instance_data" "$CONTROL_PANEL_URL"
+        # Generate HTML content with instances data
+    local html_content=$(cat <<EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control Panel</title>
+    <style>
+        /* CSS styles go here */
+    </style>
+</head>
+<body>
+    <h1>Instances</h1>
+    <table>
+        <tr>
+            <th>Instance ID</th>
+            <th>Instance Type</th>
+            <th>Instance State</th>
+            <th>Private IP</th>
+            <th>Public IP</th>
+            <th>Heartbeat</th>
+            <th>Connectivity</th>
+        </tr>
+        $instance_data
+    </table>
+</body>
+</html>
+EOF
+)
+    # Save HTML content to a file
+    echo "$html_content" > control_panel.html
+
 }
 
 # Main logic
