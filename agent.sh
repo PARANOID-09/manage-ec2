@@ -4,8 +4,7 @@
 source config.sh
 
 # Get all regions where EC2 instances are running
-REGION_LIST=$(aws ec2 describe-instances --query 'Reservations[].Instances[].Placement.AvailabilityZone' \
-               --output text | awk -F- '{print $NF}' | sort -u)
+REGION_LIST=$(aws ec2 describe-regions --output text | awk '{print $NF}')
 
 # Define heartbeat check function
 check_heartbeat() {
@@ -36,22 +35,25 @@ gather_data() {
     local instance_data=''
     # Get instance type
     local instance_type=$(aws ec2 describe-instances --instance-ids "$instance_id" \
-                          --region us-east-1 --output text --query 'Reservations[0].Instances[0].InstanceType')
+                          --region "$REGION" --output text --query 'Reservations[0].Instances[0].InstanceType')
     # Get instance state
     local instance_state=$(aws ec2 describe-instances --instance-ids "$instance_id" \
-                           --region us-east-1 --output text --query 'Reservations[0].Instances[0].State.Name')
+                           --region "$REGION" --output text --query 'Reservations[0].Instances[0].State.Name')
     # Get private IP address
     local private_ip=$(aws ec2 describe-instances --instance-ids "$instance_id" \
-                       --region us-east-1 --output text --query 'Reservations[0].Instances[0].PrivateIpAddress')
+                       --region "$REGION" --output text --query 'Reservations[0].Instances[0].PrivateIpAddress')
     # Get public IP address
     local public_ip=$(aws ec2 describe-instances --instance-ids "$instance_id" \
-                      --region us-east-1 --output text --query 'Reservations[0].Instances[0].PublicIpAddress')
+                      --region "$REGION" --output text --query 'Reservations[0].Instances[0].PublicIpAddress')
+    # Get availability zone
+    local availability_zone=$(aws ec2 describe-instances --instance-ids "$instance_id" \
+                             --region "$REGION" --output text --query 'Reservations[0].Instances[0].Placement.AvailabilityZone')
     # Call heartbeat check function
     local heartbeat_check=$(check_heartbeat)
     # Call connectivity check function
     local connectivity_check=$(check_connectivity "$instance_id")
     # Create instance data string
-    instance_data="${instance_id},${instance_type},${instance_state},${private_ip},${public_ip},${heartbeat_check},${connectivity_check}"
+    instance_data="${instance_id},${instance_type},${instance_state},${private_ip},${public_ip},${availability_zone},${heartbeat_check},${connectivity_check}"
     echo "$instance_data"
 }
 
@@ -68,23 +70,18 @@ main() {
         for region in $REGION_LIST; do
             # Get all EC2 instances in the current region
             INSTANCE_LIST=$(aws ec2 describe-instances --region "$region" --output text --query 'Reservations[].Instances[].InstanceId')
-
+            # Loop through each instance and gather data
             for instance_id in $INSTANCE_LIST; do
-                if [ "$instance_id" != "$INSTANCE_ID" ]; then
-                    # Skip the current instance (self)
-                    # Gather data from the current instance
-                    local instance_data=$(gather_data "$instance_id")
-                    # Send instance data to control panel
-                    send_data_to_control_panel "$instance_data"
-                fi
+                instance_data=$(gather_data "$instance_id")
+                # Send instance data to control panel
+                send_data_to_control_panel "$instance_data"
             done
         done
 
-        # Sleep for the specified interval
+        # Sleep for specified interval before checking again
         sleep "$HEARTBEAT_INTERVAL"
     done
 }
 
-# Start the main logic
+# Call the main logic
 main
-

@@ -30,7 +30,7 @@ export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
 export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
 # Start app.py in background
-python app.py &
+python3 app.py &
 
 # Run agent.sh
 bash agent.sh
