@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control Panel</title>
+</head>
+<body>
+    <h1>Instances</h1>
+    <table>
+        <tr>
+            <th>Instance ID</th>
+            <th>Instance Type</th>
+            <th>Instance State</th>
+            <th>Private IP</th>
+            <th>Public IP</th>
+            <th>Heartbeat</th>
+            <th>Connectivity</th>
+        </tr>
+        {% for instance in instances %}
+            <tr>
+                <td>{{ instance.split(',')[0] }}</td>
+                <td>{{ instance.split(',')[1] }}</td>
+                <td>{{ instance.split(',')[2] }}</td>
+                <td>{{ instance.split(',')[3] }}</td>
+                <td>{{ instance.split(',')[4] }}</td>
+                <td>{{ instance.split(',')[5] }}</td>
+                <td>{{ instance.split(',')[6] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
