@@ -1,6 +1,6 @@
 # manage-ec2
 
-This project contains a script `agent.sh`, a configuration file `config.sh`, a Python script `app.py`, and a directory `dir` with an `index.html` file.
+This project contains a script `agent.sh`, a configuration file `config.sh`, a Python script `app.py`, and a directory `template` with an `index.html` file.
 
 ## Description
 
