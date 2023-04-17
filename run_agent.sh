@@ -1,36 +1,15 @@
 #!/bin/bash
 
-# Generate config.sh with default values
-cat > config.sh <<EOF
-# Configuration file for agent.sh
-# Update these values as needed
+# Start the Flask application in the background
+echo "Starting Flask application..."
+nohup python app.py > flask.log 2>&1 &
 
-# Control panel URL
-CONTROL_PANEL_URL="http://localhost:5000/receive_data"
+# Start the agent script in the background
+echo "Starting agent script..."
+nohup python agent.py > agent.log 2>&1 &
 
-# AWS region
-AWS_REGION="us-east-1"
+# Add the agent.py script as a cron job
+echo "Adding agent.py as a cron job..."
+(crontab -l 2>/dev/null; echo "*/5 * * * * cd $(pwd) && /usr/bin/python agent.py > agent.log 2>&1") | crontab -
 
-# AWS SSM document name for ping command
-PING_DOCUMENT_NAME="AWS-RunShellScript"
-
-# Additional parameters for ping command
-PING_DOCUMENT_PARAMETERS=""
-
-# Sleep interval in seconds
-HEARTBEAT_INTERVAL=60
-EOF
-
-# Prompt user for AWS access key and secret access key
-read -p "Enter AWS access key: " AWS_ACCESS_KEY
-read -p "Enter AWS secret access key: " AWS_SECRET_ACCESS_KEY
-
-# Set AWS access key and secret access key as environment variables
-export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
-export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-
-# Start app.py in background
-python3 app.py &
-
-# Run agent.sh
-bash agent.sh
+echo "Setup complete!"
