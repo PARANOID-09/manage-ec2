@@ -2,14 +2,15 @@
 
 This Python script provides monitoring functionality for EC2 instances running in AWS. The script collects various data points from the EC2 instances and manages it.
 ## Requirements
-Python 3.x
-AWS CLI configured with appropriate permissions to access EC2 instances
+1. Python 3.x installed on your local machine.
+2. AWS CLI installed on your local machine.
+3. AWS CLI configured with valid AWS credentials and region.
 
 ## Installation
 
-1. Clone this repository to your local machine.
+1. Clone or download the repository to your local machine.
 
- `git clone https://github.com/PARANOID-09/manage-ec2.git`
+   `git clone https://github.com/PARANOID-09/manage-ec2.git`
  
 2. Install the required Python packages by running `pip install -r requirements.txt`.
 3. Configure your AWS CLI with appropriate credentials and permissions to access EC2 instances.
