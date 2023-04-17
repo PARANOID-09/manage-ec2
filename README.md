@@ -9,7 +9,7 @@ AWS CLI configured with appropriate permissions to access EC2 instances
 
 1. Clone this repository to your local machine.
 
- `git clone https://github.com/yourusername/your-repo.git`
+ `git clone https://github.com/PARANOID-09/manage-ec2.git`
  
 2. Install the required Python packages by running `pip install -r requirements.txt`.
 3. Configure your AWS CLI with appropriate credentials and permissions to access EC2 instances.
