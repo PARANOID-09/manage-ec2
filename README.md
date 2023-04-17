@@ -1,4 +1,4 @@
-#Manage-ec2
+# Manage-ec2
 
 This Python script provides monitoring functionality for EC2 instances running in AWS. The script collects various data points from the EC2 instances and manages it.
 ## Requirements
