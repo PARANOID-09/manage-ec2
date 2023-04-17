@@ -42,34 +42,38 @@
     <h1>Instances</h1>
     <table>
         <tr>
+            <th>Region</th>
             <th>Instance ID</th>
             <th>Instance Type</th>
             <th>Instance State</th>
+            <th>AMI</th>
             <th>Private IP</th>
             <th>Public IP</th>
             <th>Availability Zone</th>
-            <th>Heartbeat</th>
-            <th>Connectivity</th>
             <th>VPC ID</th>
             <th>Subnet ID</th>
             <th>VPC CIDR Block</th>
+            <th>Heartbeat</th>
+            <th>Connectivity</th>
             <th>Security Groups</th>
             <th>Instance Profile</th>
             <th>Tags</th>
         </tr>
         {% for instance in instances %}
             <tr>
+                <td>{{ instance['Region'] }}</td>
                 <td>{{ instance['InstanceId'] }}</td>
                 <td>{{ instance['InstanceType'] }}</td>
                 <td>{{ instance['InstanceState'] }}</td>
+                <td>{{ instance['AMI_Name'] }}</td>
                 <td>{{ instance['PrivateIp'] }}</td>
                 <td>{{ instance['PublicIp'] }}</td>
                 <td>{{ instance['AvailabilityZone'] }}</td>
-                <td>{{ instance['Heartbeat'] }}</td>
-                <td class="{% if instance['Connectivity'] == 'success' %}success{% else %}error{% endif %}">{{ instance['Connectivity'] }}</td>
                 <td>{{ instance['VpcId'] }}</td>
                 <td>{{ instance['SubnetId'] }}</td>
                 <td>{{ instance['Vpc_cidr'] }}</td>
+                <td>{{ instance['Heartbeat'] }}</td>
+                <td class="{% if instance['Connectivity'] == 'success' %}success{% else %}error{% endif %}">{{ instance['Connectivity'] }}</td>
                 <td>{{ instance['SecurityGroups'] }}</td>
                 <td>{{ instance['InstanceProfile'] }}</td>
                 <td>{{ instance['Tags'] }}</td>
