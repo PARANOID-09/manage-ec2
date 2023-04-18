@@ -29,37 +29,25 @@ def check_connectivity(instance_id):
 # Gather data from current instance
 def gather_data(instance_id, region):
     print(f"Gathering data for instance {instance_id} in {region}...")
-    # Get instance type
-    instance_type = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].InstanceType"]).decode("utf-8").strip()
-    # Get instance state
-    instance_state = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].State.Name"]).decode("utf-8").strip()
-    # Get AMI ID
-    ami_id = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].ImageId"]).decode("utf-8").strip()
-    # Get AMI name
+    # Get instance details in a single describe-instances command to reduce calls to AWS API
+    instance_data = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "json"]).decode("utf-8")
+    instance_data = json.loads(instance_data)["Reservations"][0]["Instances"][0]
+    instance_type = instance_data["InstanceType"]
+    instance_state = instance_data["State"]["Name"]
+    ami_id = instance_data["ImageId"]
     ami_name = subprocess.check_output(["aws", "ec2", "describe-images", "--image-ids", ami_id, "--region", region, "--output", "text", "--query", "Images[0].Name"]).decode("utf-8").strip()
-    # Get private IP address
-    private_ip = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].PrivateIpAddress"]).decode("utf-8").strip()
-    # Get public IP address
-    public_ip = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].PublicIpAddress"]).decode("utf-8").strip()
-    # Get availability zone
-    availability_zone = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].Placement.AvailabilityZone"]).decode("utf-8").strip()
-    # Get VPC ID
-    vpc_id = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].VpcId"]).decode("utf-8").strip()
-    # Get SUBNET ID
-    subnet_id = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].SubnetId"]).decode("utf-8").strip()
-    # Get VPC CIDR block
+    private_ip = instance_data["PrivateIpAddress"]
+    public_ip = instance_data["PublicIpAddress"]
+    availability_zone = instance_data["Placement"]["AvailabilityZone"]
+    vpc_id = instance_data["VpcId"]
+    subnet_id = instance_data["SubnetId"]
     vpc_cidr_block = subprocess.check_output(["aws", "ec2", "describe-vpcs", "--vpc-ids", vpc_id, "--region", region, "--output", "text", "--query", "Vpcs[0].CidrBlock"]).decode("utf-8").strip()
-    # Get security groups
-    security_groups = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].SecurityGroups[*].GroupName"]).decode("utf-8").strip().split()
-    # Get IAM instance profile
-    instance_profile = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "text", "--query", "Reservations[0].Instances[0].IamInstanceProfile.Arn"]).decode("utf-8").strip()
-    # Get tags
-    tags = subprocess.check_output(["aws", "ec2", "describe-instances", "--instance-ids", instance_id, "--region", region, "--output", "json", "--query", "Reservations[0].Instances[0].Tags"]).decode("utf-8")
-    tags = json.loads(tags)
+    security_groups = [group["GroupName"] for group in instance_data["SecurityGroups"]]
+    instance_profile = instance_data.get("IamInstanceProfile", {}).get("Arn")
+    tags = [tag["Key"] + ": " + tag["Value"] for tag in instance_data.get("Tags", [])]
      # Get region name from region code
     region = availability_zone[:-1]  # Extract region code from availability zone
     region_name = get_region_name(region)  # Call custom function to get region name
-    
      # Create instance data dictionary
     instance_data = {
         "InstanceId": instance_id,
