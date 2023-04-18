@@ -26,5 +26,5 @@ This Python script provides monitoring functionality for EC2 instances running i
 1. The script uses the AWS CLI to gather data from EC2 instances, so make sure you have the AWS CLI installed and configured with appropriate permissions.
 2. The script requires Python 3.x and the Python packages listed in `requirements.txt` to be installed.
 3. The script uses Flask to display the monitoring information in a web-based interface, so make sure you have Flask installed if you want to use the web-based interface.
-4. The `run_agent.sh script` has been updated to start the Flask application and the agent script in the background, and add the agent script as a cron job with the correct path to the `agent.py` script using pwd which represents the current working directory.
+4. The `run_agent.sh` script has been updated to start the Flask application and the agent script in the background, and add the agent script as a cron job with the correct path to the `agent.py` script using pwd which represents the current working directory.
 
